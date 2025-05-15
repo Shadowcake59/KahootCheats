@@ -14,6 +14,7 @@ export function useKahootGame(options: KahootGameHookOptions = {}) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [autoAnswer, setAutoAnswer] = useState(false);
   const [answerDelay, setAnswerDelay] = useState(false);
+  const [correctIndices, setCorrectIndices] = useState<number[]>([]);
   const socket = useRef<WebSocket | null>(null);
 
   // Initialize WebSocket connection
@@ -53,6 +54,7 @@ export function useKahootGame(options: KahootGameHookOptions = {}) {
     socket.current.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
+        console.log("Received message:", message);
         
         switch (message.type) {
           case 'gameState':
@@ -60,6 +62,20 @@ export function useKahootGame(options: KahootGameHookOptions = {}) {
             if (message.data.connected === false) {
               setConnected(false);
               setGamePin(null);
+            }
+            break;
+            
+          case 'questionResult':
+            // Store the correct answers
+            if (message.data.correctIndices) {
+              setCorrectIndices(message.data.correctIndices);
+              // Find the color of the first correct answer
+              const correctIndex = message.data.correctIndices[0];
+              if (correctIndex !== undefined) {
+                const color = gameState?.currentQuestion?.answers?.[correctIndex]?.color || "unknown";
+                const wasSelected = message.data.selectedIndex === correctIndex;
+                options.onAnswerSelected?.(color, wasSelected);
+              }
             }
             break;
             
@@ -71,7 +87,7 @@ export function useKahootGame(options: KahootGameHookOptions = {}) {
             break;
             
           case 'error':
-            options.onError?.(message.data.message || "Unknown error");
+            options.onError?.(message.message || "Unknown error");
             break;
         }
       } catch (error) {
@@ -79,6 +95,33 @@ export function useKahootGame(options: KahootGameHookOptions = {}) {
       }
     };
   }, [gameState, options]);
+  
+  // Auto-answer when a new question appears
+  useEffect(() => {
+    if (!autoAnswer || !connected || !gameState?.currentQuestion?.answers) return;
+
+    // Wait for the answers to be loaded
+    const answers = gameState.currentQuestion.answers;
+    if (!answers.length) return;
+    
+    // Find the correct answer if it's marked
+    const correctAnswerIndex = answers.findIndex(a => a.isCorrect);
+    
+    // If no correct answer is marked yet (real-time game), 
+    // wait for the questionResult or just pick the first one
+    const answerToSelect = correctAnswerIndex !== -1 ? correctAnswerIndex : 0;
+    
+    // Apply delay if enabled
+    const delay = answerDelay ? Math.random() * 3000 + 2000 : 500;
+    
+    console.log(`Auto-answer will select ${answerToSelect} in ${delay}ms`);
+    
+    const timeout = setTimeout(() => {
+      selectAnswer(answerToSelect);
+    }, delay);
+    
+    return () => clearTimeout(timeout);
+  }, [gameState?.currentQuestion, autoAnswer, answerDelay, connected]);
   
   // Connect to a game
   const connect = useCallback((pin: string) => {
@@ -126,6 +169,7 @@ export function useKahootGame(options: KahootGameHookOptions = {}) {
       answer: { index: answerIndex }
     };
     
+    console.log(`Selecting answer ${answerIndex}`);
     socket.current.send(JSON.stringify(message));
   }, [connected]);
   
