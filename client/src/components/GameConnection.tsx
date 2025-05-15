@@ -19,7 +19,9 @@ export default function GameConnection({
   onDisconnect,
 }: GameConnectionProps) {
   const [inputPin, setInputPin] = useState("");
-  const [pinValidation, setPinValidation] = useState("Enter the PIN displayed on the host's screen");
+  const [pinValidation, setPinValidation] = useState(
+    "Enter the PIN displayed on the host's screen",
+  );
   const [validationError, setValidationError] = useState(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +58,10 @@ export default function GameConnection({
 
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-grow">
-            <label htmlFor="game-pin" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="game-pin"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Game PIN
             </label>
             <Input
@@ -68,13 +73,15 @@ export default function GameConnection({
               disabled={connected}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition"
             />
-            <p className={`mt-1 text-xs ${validationError ? "text-accent" : "text-gray-500"}`}>
+            <p
+              className={`mt-1 text-xs ${validationError ? "text-accent" : "text-gray-500"}`}
+            >
               {pinValidation}
             </p>
           </div>
           <div className="flex items-end">
             {!connected ? (
-              <Button 
+              <Button
                 onClick={handleConnect}
                 className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-opacity-90 transition shadow-sm"
               >

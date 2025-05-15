@@ -35,11 +35,15 @@ export default function AnswerCard({
   return (
     <Card
       className={`answer-card cursor-pointer hover:shadow-md flex items-center space-x-3 p-4 ${
-        isCorrect ? "correct border-2 border-success bg-success bg-opacity-5" : "border border-gray-200"
+        isCorrect
+          ? "correct border-2 border-success bg-success bg-opacity-5"
+          : "border border-gray-200"
       }`}
       onClick={onClick}
     >
-      <div className={`w-6 h-6 rounded-md ${colorClasses[color] || "bg-gray-400"} flex-shrink-0 flex items-center justify-center text-white`}>
+      <div
+        className={`w-6 h-6 rounded-md ${colorClasses[color] || "bg-gray-400"} flex-shrink-0 flex items-center justify-center text-white`}
+      >
         <i className={shapeIcons[shape] || "ri-question-fill"}></i>
       </div>
       <div className="flex-grow">

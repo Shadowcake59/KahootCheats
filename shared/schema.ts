@@ -1,4 +1,11 @@
-import { pgTable, text, serial, integer, boolean, jsonb } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  serial,
+  integer,
+  boolean,
+  jsonb,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -22,7 +29,7 @@ export const gameSessions = pgTable("game_sessions", {
   active: boolean("active").default(true),
   questionCount: integer("question_count").default(0),
   currentQuestion: integer("current_question").default(0),
-  createdAt: text("created_at").notNull()
+  createdAt: text("created_at").notNull(),
 });
 
 export const insertGameSessionSchema = createInsertSchema(gameSessions).pick({
@@ -62,36 +69,54 @@ export const insertQuestionSchema = createInsertSchema(questions).pick({
 export const gameStateSchema = z.object({
   gamePin: z.string(),
   connected: z.boolean(),
-  currentQuestion: z.object({
-    text: z.string().optional(),
-    type: z.string().optional(),
-    answers: z.array(z.object({
-      text: z.string(),
-      color: z.string(),
-      isCorrect: z.boolean().optional(),
-      shape: z.string().optional()
-    })).optional(),
-    timeLeft: z.number().optional(),
-  }).optional(),
-  previousQuestion: z.object({
-    text: z.string().optional(),
-    correctAnswer: z.string().optional(),
-  }).optional(),
-  gameProgress: z.object({
-    current: z.number(),
-    total: z.number(),
-    points: z.number().optional(),
-  }).optional(),
+  currentQuestion: z
+    .object({
+      text: z.string().optional(),
+      type: z.string().optional(),
+      answers: z
+        .array(
+          z.object({
+            text: z.string(),
+            color: z.string(),
+            isCorrect: z.boolean().optional(),
+            shape: z.string().optional(),
+          }),
+        )
+        .optional(),
+      timeLeft: z.number().optional(),
+    })
+    .optional(),
+  previousQuestion: z
+    .object({
+      text: z.string().optional(),
+      correctAnswer: z.string().optional(),
+    })
+    .optional(),
+  gameProgress: z
+    .object({
+      current: z.number(),
+      total: z.number(),
+      points: z.number().optional(),
+    })
+    .optional(),
 });
 
 // Types for client to server messages
 export const clientMessageSchema = z.object({
-  type: z.enum(['join', 'disconnect', 'selectAnswer', 'toggleAutoAnswer', 'toggleAnswerDelay']),
+  type: z.enum([
+    "join",
+    "disconnect",
+    "selectAnswer",
+    "toggleAutoAnswer",
+    "toggleAnswerDelay",
+  ]),
   gamePin: z.string().optional(),
-  answer: z.object({
-    index: z.number().optional(),
-    color: z.string().optional()
-  }).optional(),
+  answer: z
+    .object({
+      index: z.number().optional(),
+      color: z.string().optional(),
+    })
+    .optional(),
   autoAnswer: z.boolean().optional(),
   answerDelay: z.boolean().optional(),
 });

@@ -1,7 +1,13 @@
-import { 
-  users, type User, type InsertUser,
-  gameSessions, type GameSession, type InsertGameSession,
-  questions, type Question, type InsertQuestion
+import {
+  users,
+  type User,
+  type InsertUser,
+  gameSessions,
+  type GameSession,
+  type InsertGameSession,
+  questions,
+  type Question,
+  type InsertQuestion,
 } from "@shared/schema";
 
 // modify the interface with any CRUD methods
@@ -11,18 +17,27 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // Game session methods
   createGameSession(session: InsertGameSession): Promise<GameSession>;
   getGameSession(id: number): Promise<GameSession | undefined>;
   getGameSessionByPin(gamePin: string): Promise<GameSession | undefined>;
-  updateGameSession(id: number, session: Partial<GameSession>): Promise<GameSession | undefined>;
-  
+  updateGameSession(
+    id: number,
+    session: Partial<GameSession>,
+  ): Promise<GameSession | undefined>;
+
   // Question methods
   createQuestion(question: InsertQuestion): Promise<Question>;
   getQuestionsByGameSession(gameSessionId: number): Promise<Question[]>;
-  getQuestionByIndex(gameSessionId: number, index: number): Promise<Question | undefined>;
-  updateQuestion(id: number, question: Partial<Question>): Promise<Question | undefined>;
+  getQuestionByIndex(
+    gameSessionId: number,
+    index: number,
+  ): Promise<Question | undefined>;
+  updateQuestion(
+    id: number,
+    question: Partial<Question>,
+  ): Promise<Question | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -61,7 +76,9 @@ export class MemStorage implements IStorage {
   }
 
   // Game session methods
-  async createGameSession(insertSession: InsertGameSession): Promise<GameSession> {
+  async createGameSession(
+    insertSession: InsertGameSession,
+  ): Promise<GameSession> {
     const id = this.currentGameSessionId++;
     const session: GameSession = { ...insertSession, id };
     this.gameSessions.set(id, session);
@@ -74,14 +91,17 @@ export class MemStorage implements IStorage {
 
   async getGameSessionByPin(gamePin: string): Promise<GameSession | undefined> {
     return Array.from(this.gameSessions.values()).find(
-      (session) => session.gamePin === gamePin && session.active
+      (session) => session.gamePin === gamePin && session.active,
     );
   }
 
-  async updateGameSession(id: number, sessionUpdate: Partial<GameSession>): Promise<GameSession | undefined> {
+  async updateGameSession(
+    id: number,
+    sessionUpdate: Partial<GameSession>,
+  ): Promise<GameSession | undefined> {
     const session = this.gameSessions.get(id);
     if (!session) return undefined;
-    
+
     const updatedSession = { ...session, ...sessionUpdate };
     this.gameSessions.set(id, updatedSession);
     return updatedSession;
@@ -97,20 +117,28 @@ export class MemStorage implements IStorage {
 
   async getQuestionsByGameSession(gameSessionId: number): Promise<Question[]> {
     return Array.from(this.questions.values()).filter(
-      (question) => question.gameSessionId === gameSessionId
+      (question) => question.gameSessionId === gameSessionId,
     );
   }
 
-  async getQuestionByIndex(gameSessionId: number, index: number): Promise<Question | undefined> {
+  async getQuestionByIndex(
+    gameSessionId: number,
+    index: number,
+  ): Promise<Question | undefined> {
     return Array.from(this.questions.values()).find(
-      (question) => question.gameSessionId === gameSessionId && question.questionIndex === index
+      (question) =>
+        question.gameSessionId === gameSessionId &&
+        question.questionIndex === index,
     );
   }
 
-  async updateQuestion(id: number, questionUpdate: Partial<Question>): Promise<Question | undefined> {
+  async updateQuestion(
+    id: number,
+    questionUpdate: Partial<Question>,
+  ): Promise<Question | undefined> {
     const question = this.questions.get(id);
     if (!question) return undefined;
-    
+
     const updatedQuestion = { ...question, ...questionUpdate };
     this.questions.set(id, updatedQuestion);
     return updatedQuestion;

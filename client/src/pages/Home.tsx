@@ -9,7 +9,7 @@ export default function Home() {
   const { toast } = useToast();
   const [logMessages, setLogMessages] = useState<string[]>([
     "System initialized",
-    "Waiting for game PIN"
+    "Waiting for game PIN",
   ]);
 
   const {
@@ -47,7 +47,9 @@ export default function Home() {
       });
     },
     onAnswerSelected: (color, correct) => {
-      addLogMessage(`Selected ${color} answer: ${correct ? "Correct" : "Incorrect"}`);
+      addLogMessage(
+        `Selected ${color} answer: ${correct ? "Correct" : "Incorrect"}`,
+      );
       if (correct) {
         toast({
           title: "Correct Answer",
@@ -55,7 +57,7 @@ export default function Home() {
           variant: "default",
         });
       }
-    }
+    },
   });
 
   function addLogMessage(message: string) {
@@ -64,7 +66,10 @@ export default function Home() {
       minute: "2-digit",
       second: "2-digit",
     });
-    setLogMessages((prev) => [`[${timestamp}] ${message}`, ...prev.slice(0, 19)]);
+    setLogMessages((prev) => [
+      `[${timestamp}] ${message}`,
+      ...prev.slice(0, 19),
+    ]);
   }
 
   return (
@@ -79,7 +84,9 @@ export default function Home() {
           </div>
           <div>
             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100">
-              <span className={`w-2 h-2 mr-1 rounded-full ${connected ? "bg-success" : "bg-gray-400"}`}></span>
+              <span
+                className={`w-2 h-2 mr-1 rounded-full ${connected ? "bg-success" : "bg-gray-400"}`}
+              ></span>
               {connected ? "Connected" : "Disconnected"}
             </span>
           </div>
@@ -87,10 +94,14 @@ export default function Home() {
       </header>
 
       <main className="container mx-auto px-4 py-6">
-        <GameConnection 
+        <GameConnection
           connected={connected}
           gamePin={gamePin}
-          gameStatus={connected ? `Active: Kahoot Game #${gamePin}` : "Waiting for connection"}
+          gameStatus={
+            connected
+              ? `Active: Kahoot Game #${gamePin}`
+              : "Waiting for connection"
+          }
           onConnect={connect}
           onDisconnect={disconnect}
         />

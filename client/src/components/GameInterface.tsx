@@ -36,9 +36,9 @@ export default function GameInterface({
     }
 
     setTimeLeft(gameState.currentQuestion.timeLeft);
-    
+
     const interval = setInterval(() => {
-      setTimeLeft(current => {
+      setTimeLeft((current) => {
         if (current <= 0) {
           clearInterval(interval);
           return 0;
@@ -52,13 +52,16 @@ export default function GameInterface({
 
   // Handle auto-answer
   useEffect(() => {
-    if (!autoAnswer || !connected || !gameState?.currentQuestion?.answers) return;
+    if (!autoAnswer || !connected || !gameState?.currentQuestion?.answers)
+      return;
 
-    const correctAnswerIndex = gameState.currentQuestion.answers.findIndex(a => a.isCorrect);
+    const correctAnswerIndex = gameState.currentQuestion.answers.findIndex(
+      (a) => a.isCorrect,
+    );
     if (correctAnswerIndex === -1) return;
 
     const delay = answerDelay ? Math.random() * 3000 + 1000 : 500;
-    
+
     const timeout = setTimeout(() => {
       onSelectAnswer(correctAnswerIndex);
     }, delay);
@@ -80,11 +83,11 @@ export default function GameInterface({
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   // Calculate progress percentage
-  const progressPercentage = gameState?.gameProgress 
+  const progressPercentage = gameState?.gameProgress
     ? (gameState.gameProgress.current / gameState.gameProgress.total) * 100
     : 0;
 
@@ -103,25 +106,32 @@ export default function GameInterface({
 
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Current Question</h3>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Current Question
+                </h3>
                 <p className="text-base font-medium">
-                  {gameState?.currentQuestion?.text || "Not connected to a game"}
+                  {gameState?.currentQuestion?.text ||
+                    "Not connected to a game"}
                 </p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Question Type</h3>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Question Type
+                </h3>
                 <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                   {gameState?.currentQuestion?.type || "Unknown"}
                 </div>
               </div>
 
               <div className="pt-2">
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Game Progress</h3>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">
+                  Game Progress
+                </h3>
                 <Progress value={progressPercentage} className="w-full h-2.5" />
                 <div className="flex justify-between mt-1 text-xs text-gray-500">
                   <span>
-                    {gameState?.gameProgress 
+                    {gameState?.gameProgress
                       ? `${gameState.gameProgress.current}/${gameState.gameProgress.total} Questions`
                       : "0/0 Questions"}
                   </span>
@@ -134,26 +144,34 @@ export default function GameInterface({
               </div>
 
               <div className="pt-2 border-t border-gray-100">
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Advanced Settings</h3>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">
+                  Advanced Settings
+                </h3>
                 <div className="flex items-center mb-2">
-                  <Checkbox 
-                    id="auto-answer" 
+                  <Checkbox
+                    id="auto-answer"
                     checked={autoAnswer}
                     onCheckedChange={handleAutoAnswerToggle}
                     disabled={!connected}
                   />
-                  <label htmlFor="auto-answer" className="ml-2 text-sm text-gray-700">
+                  <label
+                    htmlFor="auto-answer"
+                    className="ml-2 text-sm text-gray-700"
+                  >
                     Auto-answer questions
                   </label>
                 </div>
                 <div className="flex items-center">
-                  <Checkbox 
-                    id="answer-delay" 
+                  <Checkbox
+                    id="answer-delay"
                     checked={answerDelay}
                     onCheckedChange={handleAnswerDelayToggle}
                     disabled={!connected || !autoAnswer}
                   />
-                  <label htmlFor="answer-delay" className="ml-2 text-sm text-gray-700">
+                  <label
+                    htmlFor="answer-delay"
+                    className="ml-2 text-sm text-gray-700"
+                  >
                     Add random delay (less suspicious)
                   </label>
                 </div>
@@ -175,9 +193,12 @@ export default function GameInterface({
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
                   <i className="ri-game-line text-2xl text-gray-400"></i>
                 </div>
-                <h3 className="text-lg font-medium text-gray-700 mb-2">No Active Game</h3>
+                <h3 className="text-lg font-medium text-gray-700 mb-2">
+                  No Active Game
+                </h3>
                 <p className="text-gray-500 max-w-md mx-auto">
-                  Enter a game PIN and join a Kahoot game to see questions and answers here.
+                  Enter a game PIN and join a Kahoot game to see questions and
+                  answers here.
                 </p>
               </div>
             )}
@@ -186,8 +207,12 @@ export default function GameInterface({
             {connected && loading && (
               <div className="py-8 text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-t-primary border-r-primary border-b-gray-200 border-l-gray-200 animate-spin mb-4"></div>
-                <h3 className="text-md font-medium text-gray-700">Analyzing Question...</h3>
-                <p className="text-gray-500 text-sm mt-1">Finding the correct answer</p>
+                <h3 className="text-md font-medium text-gray-700">
+                  Analyzing Question...
+                </h3>
+                <p className="text-gray-500 text-sm mt-1">
+                  Finding the correct answer
+                </p>
               </div>
             )}
 
@@ -199,7 +224,7 @@ export default function GameInterface({
                     key={index}
                     text={answer.text}
                     color={answer.color}
-                    shape={answer.shape || ''}
+                    shape={answer.shape || ""}
                     isCorrect={answer.isCorrect || false}
                     onClick={() => onSelectAnswer(index)}
                   />
@@ -213,12 +238,16 @@ export default function GameInterface({
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardContent className="p-4">
-              <h3 className="text-sm font-medium text-gray-500 mb-2">Previous Question</h3>
+              <h3 className="text-sm font-medium text-gray-500 mb-2">
+                Previous Question
+              </h3>
               <p className="text-sm">
                 {gameState?.previousQuestion?.text || "No previous questions"}
               </p>
               <div className="mt-2 flex items-center">
-                <span className="text-xs text-gray-500 mr-2">Correct answer:</span>
+                <span className="text-xs text-gray-500 mr-2">
+                  Correct answer:
+                </span>
                 <span className="text-xs font-medium text-success">
                   {gameState?.previousQuestion?.correctAnswer || "N/A"}
                 </span>

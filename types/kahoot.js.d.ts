@@ -1,4 +1,4 @@
-declare module 'kahoot.js' {
+declare module "kahoot.js" {
   class Kahoot {
     constructor();
     join(gamePin: string, name: string): Promise<void>;
